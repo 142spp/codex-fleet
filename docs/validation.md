@@ -6,7 +6,7 @@ The current local validation includes:
 
 - `cargo fmt --check`
 - `cargo clippy --all-targets --locked -- -D warnings`
-- `cargo test --locked`: 22 tests
+- `cargo test --locked`: 24 tests
 - `cargo build --release --locked`
 - `tests/terminal_smoke.py`: a real tmux PTY with a mock Codex server; covers
   Unicode, the responsive panel, normal/error CLI handoffs, archiving and resize.
@@ -17,6 +17,10 @@ The current local validation includes:
 The GitHub Actions workflow runs the same checks on stable Rust and the declared
 minimum Rust version. The workflow uses only synthetic sessions, with no Codex
 credentials or access to real computers.
+
+The README demo is generated from the final Ratatui cell buffer. SVG tests cover
+foreground/background colors, selection styling, XML escaping, grid placement
+and wide Unicode characters. A rasterized render was also visually checked.
 
 ## Live integration evidence
 

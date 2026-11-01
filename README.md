@@ -9,7 +9,10 @@ conversation, Enter to open the original session, and `a` to archive it.
 
 ![Synthetic demo of the multi-device dashboard](docs/assets/demo.svg)
 
-The preview uses synthetic sessions. No real session content is included.
+The preview is exported from the app's rendered cell buffer, preserving layout,
+colors and selection highlights. It uses synthetic sessions and a reference ANSI
+palette; your terminal's font and color theme may differ. No real session content
+is included.
 
 ## Install and run
 

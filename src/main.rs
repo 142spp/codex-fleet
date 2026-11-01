@@ -5,6 +5,7 @@ mod fleet;
 mod launcher;
 mod model;
 mod protocol;
+mod snapshot;
 mod state;
 mod ui;
 
@@ -51,7 +52,7 @@ struct Args {
     /// Show synthetic sample sessions without connecting to any server.
     #[arg(long)]
     demo: bool,
-    /// Render one frame to a text file instead of opening a terminal.
+    /// Render one frame to text or a styled SVG (when the path ends in .svg).
     #[arg(long)]
     snapshot: Option<PathBuf>,
     #[arg(long, default_value_t = 110)]
@@ -107,6 +108,10 @@ async fn main() -> Result<()> {
         let mut terminal = Terminal::new(TestBackend::new(args.width, args.height))?;
         terminal.draw(|f| ui::draw(f, &app))?;
         let buf = terminal.backend().buffer();
+        if path.extension().is_some_and(|ext| ext == "svg") {
+            std::fs::write(path, snapshot::svg(buf))?;
+            return Ok(());
+        }
         let mut rendered = String::new();
         for y in 0..args.height {
             let mut x = 0;

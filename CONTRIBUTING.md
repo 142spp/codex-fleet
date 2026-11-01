@@ -37,3 +37,8 @@ behind intentional user actions, and retain confirmation before permanent
 deletion or archiving an active task.
 
 Contributions are provided under the repository's MIT license.
+
+For UI changes, rebuild and regenerate the README demo with
+`python3 scripts/render_demo.py`. The exporter reads the same rendered cell
+buffer as the TUI, including colors, modifiers and exact cell positions. Do not
+recreate screenshots by styling the plain-text snapshot independently.
