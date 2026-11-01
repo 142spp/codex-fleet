@@ -59,3 +59,17 @@ For UI changes, rebuild and regenerate the README demo with
 `python3 scripts/render_demo.py`. The exporter reads the same rendered cell
 buffer as the TUI, including colors, modifiers and exact cell positions. Do not
 recreate screenshots by styling the plain-text snapshot independently.
+
+To regenerate the animated tour, install ImageMagick 7 and the DejaVu Sans Mono
+font in addition to tmux, then run:
+
+```sh
+cargo build --locked
+python3 scripts/record_demo.py
+```
+
+The recorder operates the real `--demo` TUI in its own isolated tmux server,
+preserves captured ANSI colors and cell positions, and encodes a looping GIF.
+It uses only Python's standard library and does not connect to real devices.
+Use `--frames-dir artifacts/demo-frames` to retain captured frames for review.
+The caption and key hints above the terminal are recording annotations.

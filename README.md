@@ -34,6 +34,14 @@ sessions into one view and opens the selected thread in its owning Codex CLI.
 | **Room to read.** Wide terminals show status, timestamps and conversation details. Narrow terminals keep a compact list. | **Everyday task controls.** Create, fork, rename, stop and archive sessions, or start a fresh Git worktree. |
 | **Keep your place.** Pin and hide sessions locally. Cached rows remain visible when a device goes offline. | **Use the setup you have.** Existing SSH aliases, Codex authentication and shared app-servers. No central service or extra API key. |
 
+### See it in action
+
+![Animated tour of navigation, status filters, search, grouping, keyboard shortcuts and responsive layout](docs/assets/demo.gif)
+
+An 18-second tour captured from the running TUI with synthetic sessions.
+The keys used in each step appear above the terminal. Prefer a still image?
+[Open the static preview](docs/assets/demo.svg).
+
 ## Quick start
 
 **Requirements:** Linux, Rust 1.89+ and Cargo. Connecting real sessions also
