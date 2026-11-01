@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        rust: [stable, '1.89.0']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Install Rust
+        run: |
+          rustup toolchain install "${{ matrix.rust }}" --profile minimal --component rustfmt --component clippy
+          rustup override set "${{ matrix.rust }}"
+      - name: Install PTY test tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes tmux python3-venv
+          python3 -m venv .venv
+          .venv/bin/pip install -r requirements-test.txt
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets --locked -- -D warnings
+      - run: cargo test --locked
+      - run: cargo build --locked
+      - name: Terminal integration tests
+        run: |
+          .venv/bin/python tests/terminal_smoke.py
+          .venv/bin/python tests/shortcuts_smoke.py
+      - run: cargo build --release --locked

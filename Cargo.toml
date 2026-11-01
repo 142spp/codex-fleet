@@ -1,0 +1,27 @@
+[package]
+name = "codex-fleet"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.89"
+description = "A multi-device terminal dashboard for existing Codex sessions"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/142spp/codex-fleet"
+keywords = ["codex", "tui", "ssh", "dashboard"]
+categories = ["command-line-utilities", "development-tools"]
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+crossterm = "0.29"
+futures-util = { version = "0.3", features = ["sink"] }
+ratatui = "0.30"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["full"] }
+tokio-tungstenite = "0.30"
+toml = "0.9"
+unicode-width = "0.2"
+
+[dev-dependencies]
+tempfile = "3"

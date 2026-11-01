@@ -1,0 +1,21 @@
+# SSH aliases come from ~/.ssh/config. No passwords or private keys are stored here.
+poll_seconds = 5
+timeout_seconds = 15
+
+[[hosts]]
+id = "local"
+name = "Laptop"
+
+[[hosts]]
+id = "desktop"
+name = "Desktop"
+ssh = "desktop"
+# If Codex is absent from the non-interactive SSH PATH, set an absolute path:
+# codex = "/home/you/.local/bin/codex"
+# To reuse a specific existing server, set its absolute Unix socket path:
+# socket = "/home/you/.codex/app-server-control/app-server-control.sock"
+
+[[hosts]]
+id = "jetson"
+name = "Jetson"
+ssh = "jetson"

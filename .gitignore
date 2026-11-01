@@ -1,0 +1,9 @@
+/target
+/fleet.local.toml
+/artifacts/
+__pycache__/
+/.venv/
+/.env
+/.env.*
+!/.env.example
+*.bundle

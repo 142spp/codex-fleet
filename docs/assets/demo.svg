@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1300" height="720" role="img" aria-label="Codex Fleet synthetic demo">
+<rect width="100%" height="100%" rx="10" fill="#19191c"/>
+<g font-family="DejaVu Sans Mono, monospace" font-size="14" xml:space="preserve">
+<text x="20" y="34" fill="#ffffff"> Codex Fleet  Group: Device    Connected 3/3</text>
+<text x="20" y="54" fill="#ffffff"> All 6  Needs you 1  Working 2  Ready 1  Saved 2  Error 0  Unknown 0</text>
+<text x="20" y="74" fill="#cecbd8"> Device: All    / search</text>
+<text x="20" y="94" fill="#cecbd8">────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</text>
+<text x="20" y="114" fill="#cecbd8">  Tasks                                                            Status       Updated   │ Task details · [ ] scroll</text>
+<text x="20" y="134" fill="#cecbd8">                                                                                          │</text>
+<text x="20" y="154" fill="#cecbd8">  Laptop  2                                                                               │ Review API client</text>
+<text x="20" y="174" fill="#cecbd8">    ~/projects/codex-fleet  1                                                             │ ● Working</text>
+<rect x="18" y="178" width="790" height="20" fill="#285e98"/>
+<text x="20" y="194" fill="#ffffff">›     ● Review API client                                          Working      1m ago    │</text>
+<text x="20" y="214" fill="#cecbd8">    ~/projects/example-app  1                                                             │ Device</text>
+<text x="20" y="234" fill="#cecbd8">      ○ Update documentation                                       Ready        1s ago    │ Laptop</text>
+<text x="20" y="254" fill="#cecbd8">                                                                                          │</text>
+<text x="20" y="274" fill="#cecbd8">  Desktop  2                                                                              │ Model</text>
+<text x="20" y="294" fill="#cecbd8">    ~/projects/codex-fleet  1                                                             │ gpt-6.1-sol</text>
+<text x="20" y="314" fill="#cecbd8">      · Review service supervisor                                  Saved        1m ago    │</text>
+<text x="20" y="334" fill="#cecbd8">    ~/projects/example-app  1                                                             │ Reasoning</text>
+<text x="20" y="354" fill="#cecbd8">      ! Run integration tests                                      Needs you    1s ago    │ high</text>
+<text x="20" y="374" fill="#cecbd8">                                                                                          │</text>
+<text x="20" y="394" fill="#cecbd8">  Jetson  2                                                                               │ Project</text>
+<text x="20" y="414" fill="#cecbd8">    ~/projects/codex-fleet  1                                                             │ ~/projects/codex-fleet</text>
+<text x="20" y="434" fill="#cecbd8">      · Debug device connection                                    Saved        1m ago    │</text>
+<text x="20" y="454" fill="#cecbd8">    ~/projects/example-app  1                                                             │ Branch</text>
+<text x="20" y="474" fill="#cecbd8">      ● Validate sensor stream                                     Working      1s ago    │ main</text>
+<text x="20" y="494" fill="#cecbd8">                                                                                          │</text>
+<text x="20" y="514" fill="#cecbd8">                                                                                          │ Last message</text>
+<text x="20" y="534" fill="#cecbd8">                                                                                          │ Demo preview. Select a session to inspect its</text>
+<text x="20" y="554" fill="#cecbd8">                                                                                          │ latest response and project metadata.</text>
+<text x="20" y="574" fill="#cecbd8">                                                                                          │</text>
+<text x="20" y="594" fill="#cecbd8">                                                                                          │ Prompt</text>
+<text x="20" y="614" fill="#cecbd8">                                                                                          │ Synthetic sample; no actual session is opened.</text>
+<text x="20" y="634" fill="#cecbd8">                                                                                          │</text>
+<text x="20" y="654" fill="#cecbd8">Laptop: online  |  Desktop: online  |  Jetson: online</text>
+<text x="20" y="674" fill="#cecbd8"></text>
+<text x="20" y="694" fill="#cecbd8">? help  ↑/↓ move  enter open  n new  a archive  F3 search  c device  F5 refresh  q quit</text>
+</g>
+</svg>
