@@ -1,3 +1,8 @@
+<p align="center">
+  <img src="docs/assets/demo.gif" width="100%" alt="Animated tour of navigation, status filters, search, grouping, keyboard shortcuts and responsive layout">
+</p>
+<p align="center"><sub>An 18-second tour of the running TUI with synthetic sessions. Keys are shown above the terminal.</sub></p>
+
 <div align="center">
   <img src="docs/assets/logo.svg" width="96" height="96" alt="Codex Fleet logo">
   <h1>Codex Fleet</h1>
@@ -17,11 +22,6 @@
   </p>
 </div>
 
-<p align="center">
-  <img src="docs/assets/demo.svg" width="100%" alt="Codex Fleet showing sessions grouped by device and folder, with status columns and a conversation preview">
-</p>
-<p align="center"><sub>Actual TUI render with synthetic sessions. Your terminal's font and color theme may differ.</sub></p>
-
 Keep track of work on your laptop, desktop and embedded devices without cycling
 through terminals. Inspired by `codex agents`, Fleet brings your existing
 sessions into one view and opens the selected thread in its owning Codex CLI.
@@ -34,13 +34,15 @@ sessions into one view and opens the selected thread in its owning Codex CLI.
 | **Room to read.** Wide terminals show status, timestamps and conversation details. Narrow terminals keep a compact list. | **Everyday task controls.** Create, fork, rename, stop and archive sessions, or start a fresh Git worktree. |
 | **Keep your place.** Pin and hide sessions locally. Cached rows remain visible when a device goes offline. | **Use the setup you have.** Existing SSH aliases, Codex authentication and shared app-servers. No central service or extra API key. |
 
-### See it in action
+<details>
+<summary>Static preview</summary>
 
-![Animated tour of navigation, status filters, search, grouping, keyboard shortcuts and responsive layout](docs/assets/demo.gif)
+![Codex Fleet showing sessions grouped by device and folder, with status columns and a conversation preview](docs/assets/demo.svg)
 
-An 18-second tour captured from the running TUI with synthetic sessions.
-The keys used in each step appear above the terminal. Prefer a still image?
-[Open the static preview](docs/assets/demo.svg).
+Actual TUI render with synthetic sessions. Your terminal's font and color theme
+may differ.
+
+</details>
 
 ## Quick start
 
