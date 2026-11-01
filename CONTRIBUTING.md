@@ -1,8 +1,23 @@
 # Contributing
 
+[← Back to README](README.md) · [Design](docs/design.md) · [Validation](docs/validation.md)
+
 Bug reports and focused pull requests are welcome. Include the Fleet and Codex
 versions, host operating systems, relevant error text and reproduction steps.
 Redact session transcripts, SSH hostnames, addresses and credentials.
+
+## Getting started
+
+```sh
+git clone https://github.com/142spp/codex-fleet.git
+cd codex-fleet
+cargo run --locked -- --demo
+```
+
+The demo runs without a Codex account or remote devices. For real connections,
+copy `fleet.example.toml` to the ignored `fleet.local.toml` and follow the
+[configuration guide](docs/configuration.md). Keep pull requests focused, and
+update user-facing documentation when behavior changes.
 
 ## Local checks
 
@@ -37,6 +52,8 @@ behind intentional user actions, and retain confirmation before permanent
 deletion or archiving an active task.
 
 Contributions are provided under the repository's MIT license.
+
+## Updating the demo
 
 For UI changes, rebuild and regenerate the README demo with
 `python3 scripts/render_demo.py`. The exporter reads the same rendered cell

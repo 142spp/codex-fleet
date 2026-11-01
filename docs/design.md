@@ -1,5 +1,7 @@
 # Design
 
+[← Back to README](../README.md) · [Validation](validation.md)
+
 ## Boundary
 
 Fleet owns the terminal UI and its connections. Each existing Codex app-server
@@ -89,3 +91,28 @@ from server history. Pinning uses this local store because the installed 0.166
 server rejects the documented isPinned metadata update. H shows hidden tasks;
 h restores them. Atomic state-file replacement occurs before changing the UI.
 Existing state files with only hidden entries remain readable.
+
+## Implementation and protocol
+
+- Ratatui + Crossterm: rendering, keyboard input and terminal lifecycle.
+- Tokio: one independent connection worker per host; reconnect backoff 1–30s.
+- tokio-tungstenite: WebSocket framing, including Unix/SSH streams.
+- Serde: tolerant server responses and strict TOML configuration.
+- Clap: command-line interface.
+
+The client performs `initialize` / `initialized`, then paginated `thread/list`.
+It merges `thread/loaded/list` + `thread/read` so new, unsaved chats also appear.
+Historical listing follows Codex's default interactive-source filter; loaded
+threads are included regardless of their source.
+Details use `thread/read` and `thread/turns/list`. Browsing never sends
+`thread/resume`, `turn/start`, approvals or mutations. Explicit shortcuts use
+`thread/start`, `thread/fork`, `thread/name/set`, `turn/interrupt`, `thread/archive`
+and `thread/delete`, always against the selected device. No prompt is sent by
+new-session creation.
+Older servers without paginated history still show metadata and the read error.
+
+## References
+
+- [OpenAI App Server protocol](https://learn.chatgpt.com/docs/app-server)
+- [OpenAI CLI commands and remote mode](https://learn.chatgpt.com/docs/developer-commands)
+- [Ratatui terminal handoff recipe](https://ratatui.rs/recipes/apps/spawn-vim/)

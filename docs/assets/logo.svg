@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">Codex Fleet</title>
+  <desc id="desc">Three terminal windows connected in a fleet, on a dark rounded square.</desc>
+  <rect width="128" height="128" rx="28" fill="#131c26"/>
+  <rect x="1" y="1" width="126" height="126" rx="27" fill="none" stroke="#304451" stroke-width="2"/>
+  <path d="M64 53v13M33 78V66h62v12" fill="none" stroke="#78c8a0" stroke-width="3" stroke-linejoin="round"/>
+  <g fill="#1e303b" stroke="#78c8a0" stroke-width="2.5">
+    <rect x="41" y="22" width="46" height="31" rx="6"/>
+    <rect x="13" y="78" width="40" height="29" rx="6"/>
+    <rect x="75" y="78" width="40" height="29" rx="6"/>
+  </g>
+  <g fill="none" stroke="#e7f3ee" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m51 32 6 5-6 5m12 0h11"/>
+    <path d="m22 88 5 4.5-5 4.5m11 0h10"/>
+    <path d="m84 88 5 4.5-5 4.5m11 0h10"/>
+  </g>
+  <circle cx="64" cy="66" r="4" fill="#e7f3ee"/>
+</svg>

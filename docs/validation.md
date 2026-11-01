@@ -1,5 +1,7 @@
 # Validation and compatibility
 
+[← Back to README](../README.md) · [Design](design.md)
+
 ## Automated checks
 
 The current local validation includes:
