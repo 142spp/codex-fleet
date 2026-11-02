@@ -83,20 +83,26 @@ may differ.
 requires OpenSSH and an authenticated Codex CLI with a running shared app-server
 on each device.
 
-### 1. Install and try the demo
+### 1. Install
 
 ```sh
 git clone https://github.com/142spp/codex-fleet.git
 cd codex-fleet
 cargo install --path . --locked
-codex-fleet --demo
 ```
 
-The demo is self-contained: no credentials, servers or SSH connections required.
 Cargo normally installs the binary to `~/.cargo/bin`; make sure it is on your
 `PATH`.
 
 ### 2. Connect your hosts
+
+To browse your local Codex sessions:
+
+```sh
+codex-fleet
+```
+
+To combine local and remote sessions, create a configuration:
 
 ```sh
 mkdir -p ~/.config/codex-fleet
@@ -109,11 +115,10 @@ Edit the file to match your SSH aliases, then run:
 codex-fleet --config ~/.config/codex-fleet/fleet.toml
 ```
 
-For just the local device, run `codex-fleet` without a configuration flag.
 See [configuration and troubleshooting](docs/configuration.md) for the full
 example, executable paths and shared-server setup.
 
-### 3. Make yourself at home
+### 3. Manage your sessions
 
 | Key | Action |
 | --- | --- |
@@ -126,6 +131,18 @@ example, executable paths and shared-server setup.
 | `?` | Show all shortcuts |
 
 [Full keyboard reference →](docs/usage.md#keyboard-shortcuts)
+
+<details>
+<summary>Optional: preview the interface without connecting to a server</summary>
+
+```sh
+codex-fleet --demo
+```
+
+This uses example sessions and requires no credentials or SSH connections.
+Run without `--demo` to work with your own sessions.
+
+</details>
 
 ## How it fits together
 
