@@ -28,44 +28,37 @@ and resume it on the host where it already runs.
 
 ## Why Fleet?
 
-[`codex agents`](https://learn.chatgpt.com/docs/developer-commands#codex-agents)
-provides a command center for the shared server you are connected to, including
-a remote server selected with `--remote`. Fleet takes inspiration from its
-session list, keyboard controls and conversation preview.
+Inspired by [`codex agents`](https://learn.chatgpt.com/docs/developer-commands#codex-agents):
+the familiar session workflow, extended from one connected server to multiple hosts.
 
-With several independent servers, you end up switching connections to find a
-session or check which environment needs attention. Identical project paths
-and familiar task names can make it harder to tell where work is running.
-
-Fleet extends that workflow into a single view across configured hosts:
-
-| When work spans multiple hosts | What Fleet provides |
+| Benefit | What you get |
 | --- | --- |
-| Sessions are split between separate server views. | **One combined list**, grouped by host and working directory, or by project across hosts. |
-| Finding blocked work means checking each environment. | **Shared status filters and search** across connected hosts, with host-specific filtering when needed. |
-| Similar project paths and task names make ownership unclear. | **Host context alongside project context**, plus branch, model and recent conversation details. |
-| Resuming requires finding the right environment and session. | **Enter to open the original thread** with its owning server socket and working directory; exit Codex to return to Fleet. |
-| A connection drops while you are following several tasks. | **Cached rows marked offline**, automatic reconnection and a manual refresh shortcut. |
+| **One view** | Sessions across hosts, grouped by host and project. |
+| **Less switching** | Search and filter status across all connected environments. |
+| **Resume in place** | Press Enter to open the original session on its owning host. |
+| **Your infrastructure** | Local environments, remote development servers and SSH-accessible VMs. |
 
-Familiar task actions are available from the same list: create, fork, rename,
-stop, archive and delete sessions, or open a new Git worktree on the selected
-host. Pin and hide preferences stay local to Fleet. Wide terminals show a
-conversation sidebar; narrow terminals keep a compact list.
+Create, fork, rename, stop and archive sessions from the same list.
+[See all controls →](docs/usage.md#keyboard-shortcuts)
 
-### Bring your own hosts
+<details>
+<summary>Background and host setup</summary>
 
-Use Fleet with a local development environment, remote development servers,
-self-managed VMs or dedicated build and compute hosts. `Local`, `Dev server`
-and `Build server` in the demo are example labels, not fixed device types.
-Name each host for your own workflow and add or remove `[[hosts]]` entries in
-the configuration. Each host needs a compatible Codex shared app-server;
-the current implementation and validation target Linux.
+Native `codex agents` already supports remote connections. Fleet adds a combined
+view of independent servers, so you can find a session or check what needs
+attention without visiting each server separately. Host and project context
+help distinguish similarly named tasks.
 
-Fleet reuses your existing SSH configuration and Codex authentication. It does
-not move sessions or synchronize project files between hosts, and it does not
-require a central service or an extra API key. The addition over the native
-`agents` workflow is multi-server visibility and navigation, rather than remote
-access itself.
+Host names and the number of configured hosts are up to you. `Local`,
+`Dev server` and `Build server` are example labels, not fixed device types.
+Each host needs a compatible Codex shared app-server; Fleet currently targets
+Linux and reuses your existing SSH configuration and Codex authentication.
+
+Sessions and project files stay on their original hosts. No central service or
+extra API key is required. See [configuration](docs/configuration.md) and
+[design](docs/design.md) for details.
+
+</details>
 
 <details>
 <summary>Static preview</summary>
