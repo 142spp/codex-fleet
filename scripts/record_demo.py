@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Record the actual demo TUI through an isolated tmux server; encode with ImageMagick.
+"""Record the actual demo TUI through an isolated tmux server; encode a continuous keyboard screencast.
 
-Requires Python 3.11+, tmux, ImageMagick 7 and DejaVu Sans Mono.
+Requires Python 3.11+, tmux, ImageMagick 7, FFmpeg and DejaVu Sans Mono.
 No Python packages, Codex credentials or network connections are needed.
 """
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import nullcontext
 from html import escape
 import json
@@ -20,8 +21,9 @@ import unicodedata
 ROOT = Path(__file__).resolve().parents[1]
 COLS, ROWS = 140, 34
 CELL_W, CELL_H = 9, 20
-PAD, TOP = 20, 76
-WIDTH, HEIGHT = COLS * CELL_W + PAD * 2, ROWS * CELL_H + TOP + PAD
+PAD, TOP = 20, 20
+WIDTH, HEIGHT = COLS * CELL_W + PAD * 2, ROWS * CELL_H + TOP + 96
+FPS, DURATION = 20, 24
 BACKGROUND, FOREGROUND = "#19191c", "#cecbd8"
 # Match the reference palette in src/snapshot.rs.
 PALETTE = ["#000000", "#cd3131", "#0dbc79", "#e5e510", "#2472c8", "#bc3fbc",
@@ -41,21 +43,16 @@ def indexed_color(index):
     return "#{0:02x}{0:02x}{0:02x}".format(8 + 10 * (index - 232))
 
 
-def frame_svg(capture, columns, title, key, number, total):
-    """Render captured SGR attributes and cell positions, not a recreated UI."""
+def frame_svg(capture, events, elapsed):
+    """Preserve captured terminal cells; show timed key presses below the TUI."""
     output = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{HEIGHT}">',
               f'<rect width="100%" height="100%" rx="12" fill="{BACKGROUND}"/>',
               '<g font-family="DejaVu Sans Mono, monospace">',
-              '<text x="20" y="28" fill="#78c8a0" font-size="12" font-weight="bold">CODEX FLEET / QUICK TOUR</text>',
-              f'<text x="20" y="53" fill="#ffffff" font-size="17">{escape(title)}</text>',
-              f'<text x="{WIDTH - 20}" y="28" text-anchor="end" fill="#9999a5" font-size="12">{number:02d} / {total:02d} · SYNTHETIC DEMO</text>',
-              f'<text x="{WIDTH - 20}" y="53" text-anchor="end" fill="#8ab4f8" font-size="14">{escape(key)}</text>',
-              f'<path d="M20 65H{WIDTH - 20}" stroke="#35353d"/>',
               '<g font-size="14" xml:space="preserve">']
     style = dict(fg=FOREGROUND, bg=BACKGROUND, bold=False, dim=False,
                  italic=False, underline=False, reverse=False)
     defaults = style.copy()
-    origin = PAD + (COLS - columns) * CELL_W // 2
+    origin = PAD
     for row, line in enumerate(capture.splitlines()):
         if row >= ROWS:
             break
@@ -114,99 +111,166 @@ def frame_svg(capture, columns, title, key, number, total):
                     opacity = "0.65" if style["dim"] else "1"
                     output.append(f'<text x="{x}" y="{y + 15}" fill="{fg}" font-weight="{weight}" font-style="{italic}" text-decoration="{underline}" opacity="{opacity}">{escape(char)}</text>')
                 column += cells
-    output.append('</g></g></svg>')
+    output.append('</g>')
+    footer = TOP + ROWS * CELL_H + 12
+    output.append(f'<path d="M20 {footer}H{WIDTH - 20}" stroke="#35353d"/>')
+    output.append(f'<text x="20" y="{footer + 39}" fill="#9999a5" font-size="13">KEYS</text>')
+    recent = [event for event in events if 0 <= elapsed - event[0] < 2.4][-7:]
+    x = 82
+    for at, key, label, action in recent:
+        age = elapsed - at
+        opacity = min(1.0, (2.4 - age) / 0.55)
+        pressed = age < 0.2
+        width = max(38, len(label) * 10 + 20)
+        fill = '#294557' if pressed else '#22252d'
+        stroke = '#8ab4f8' if pressed else '#454957'
+        y = footer + 14 + (2 if pressed else 0)
+        output.append(f'<g opacity="{opacity:.2f}"><rect x="{x}" y="{y}" width="{width}" height="34" rx="6" fill="{fill}" stroke="{stroke}"/>')
+        output.append(f'<text x="{x + width / 2}" y="{y + 22}" text-anchor="middle" fill="#e6e9f0" font-size="15">{escape(label)}</text></g>')
+        x += width + 8
+    action = recent[-1][3] if recent else 'Laptop · Desktop · Jetson'
+    output.append(f'<text x="{WIDTH - 20}" y="{footer + 36}" text-anchor="end" fill="#b7c5d9" font-size="14">{escape(action)}</text>')
+    output.append('</g></svg>')
     return "\n".join(output)
+
+
+# One uninterrupted task: browse, filter, type a search, read, and return.
+# Uneven pauses include time to read and inspect the asynchronously loaded panel.
+EVENTS = [
+    (1.05, 'Down', '↓', 'Next session'),
+    (1.42, 'Down', '↓', 'Next session'),
+    (1.65, 'Down', '↓', 'Next session'),
+    (2.90, 'Up', '↑', 'Previous session'),
+    (3.80, 'Tab', 'Tab', 'Filter: Needs you'),
+    (5.30, 'BTab', 'Shift+Tab', 'Filter: All'),
+    (6.25, '/', '/', 'Search sessions'),
+    (6.85, 's', 's', 'Search: s'),
+    (7.02, 'e', 'e', 'Search: se'),
+    (7.14, 'n', 'n', 'Search: sen'),
+    (7.40, 's', 's', 'Search: sens'),
+    (7.54, 'o', 'o', 'Search: senso'),
+    (7.70, 'r', 'r', 'Search: sensor'),
+    (8.65, 'Enter', 'Enter', 'Keep search results'),
+    (9.15, 'd', 'd', 'Open conversation'),
+    (10.80, 'Escape', 'Esc', 'Close conversation'),
+    (11.30, 'Escape', 'Esc', 'Clear search'),
+    (12.25, 'g', 'g', 'Group by project'),
+    (13.05, 'Down', '↓', 'Next session'),
+    (13.23, 'Down', '↓', 'Next session'),
+    (14.40, 'g', 'g', 'Flat session list'),
+    (15.00, 'g', 'g', 'Group by device'),
+    (16.00, '?', '?', 'Open keyboard guide'),
+    (17.90, 'Escape', 'Esc', 'Close keyboard guide'),
+    (18.60, 'Home', 'Home', 'First session'),
+    (19.20, 'Down', '↓', 'Next session'),
+    (19.40, 'Down', '↓', 'Next session'),
+    (19.80, 'Up', '↑', 'Previous session'),
+    (20.15, 'Home', 'Home', 'First session'),
+]
+
+
+def validate_recording(recording):
+    def pane(at):
+        frame = min(recording, key=lambda item: abs(item['time'] - at))
+        return SGR.sub('', frame['capture'])
+
+    assert 'All 6 ' in pane(0.5)
+    assert 'Needs you 1' in pane(4.5) and 'Run integration tests' in pane(4.5)
+    assert '/se' in pane(7.12), 'Intermediate typing was not captured'
+    assert '/sensor' in pane(8.2) and 'All 1 ' in pane(8.2)
+    assert 'Recent conversation' in pane(9.8)
+    assert '/sensor' not in pane(11.8)
+    assert 'Group: Project' in pane(12.8)
+    assert 'Task shortcuts' in pane(16.8)
+    assert 'Task shortcuts' not in pane(18.4)
+    gaps = [b['time'] - a['time'] for a, b in zip(recording, recording[1:])]
+    assert max(gaps) < 0.2, 'Capture stalled; repeat the recording on an idle host'
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path, default=ROOT / "docs/assets/demo.gif")
-    parser.add_argument("--frames-dir", type=Path, help="Keep SVG/PNG frames for review")
+    parser.add_argument('--output', type=Path, default=ROOT / 'docs/assets/demo.gif')
+    parser.add_argument('--frames-dir', type=Path, help='Keep captures, frames and timing for review')
     args = parser.parse_args()
-    binary = ROOT / "target/debug/codex-fleet"
+    binary = ROOT / 'target/debug/codex-fleet'
     if not binary.is_file():
-        parser.error("Build the application first: cargo build --locked")
-    for command in ("tmux", "magick"):
+        parser.error('Build the application first: cargo build --locked')
+    for command in ('tmux', 'magick', 'ffmpeg'):
         if not shutil.which(command):
-            parser.error(f"Required command is missing: {command}")
-
-    # Each step operates the running demo with real keys. Durations are playback
-    # pauses for readability; there is no simulated server or invented UI state.
-    steps = [
-        ("Your devices, grouped by project", "Device → folder → session", [], COLS, 180),
-        ("Move through sessions and read the preview", "j / k · navigate", ["j"], COLS, 110),
-        ("Inspect work on another device", "j · next session", ["j"], COLS, 110),
-        ("Find tasks waiting for you", "Tab · status filter", ["Tab"], COLS, 160),
-        ("See what is running", "Tab · Working", ["Tab"], COLS, 140),
-        ("Search across the entire fleet", "/ · search", ["BTab", "BTab", "/", "a", "p", "i"], COLS, 160),
-        ("Group by project across devices", "g · grouping", ["Escape", "Escape", "g"], COLS, 140),
-        ("Switch to a flat session list", "g · grouping", ["g"], COLS, 120),
-        ("Focus on one device", "c · device filter", ["g", "c"], COLS, 140),
-        ("Keep the shortcuts close", "? · keyboard guide", ["c", "c", "c", "?"], COLS, 190),
-        ("A compact view for smaller terminals", "95 columns", ["Escape"], 95, 180),
-        ("More room, more context", "140 columns", [], COLS, 180),
-    ]
+            parser.error(f'Required command is missing: {command}')
     args.output.parent.mkdir(parents=True, exist_ok=True)
     if args.frames_dir:
         args.frames_dir.mkdir(parents=True, exist_ok=True)
-    workspace = nullcontext(str(args.frames_dir)) if args.frames_dir else tempfile.TemporaryDirectory(prefix="fleet-frames-")
-    with workspace as directory, tempfile.TemporaryDirectory(prefix="fleet-record-") as session:
+    workspace = nullcontext(str(args.frames_dir)) if args.frames_dir else tempfile.TemporaryDirectory(prefix='fleet-frames-')
+    with workspace as directory, tempfile.TemporaryDirectory(prefix='fleet-record-') as session:
         frames = Path(directory)
-        tmux_args = ["tmux", "-S", str(Path(session) / "tmux.sock")]
+        tmux_args = ['tmux', '-S', str(Path(session) / 'tmux.sock')]
         env = dict(os.environ)
-        env.pop("NO_COLOR", None)
-        env["TERM"] = "xterm-256color"
+        env.pop('NO_COLOR', None)
+        env['TERM'] = 'xterm-256color'
 
         def tmux(*command, check=True):
             return subprocess.run(tmux_args + list(command), env=env, check=check,
                                   capture_output=True, text=True).stdout
 
-        manifest = []
+        recording, sent = [], []
         try:
-            tmux("-f", "/dev/null", "new-session", "-d", "-s", "demo", "-x", str(COLS),
-                 "-y", str(ROWS), str(binary), "--demo")
+            tmux('-f', '/dev/null', 'new-session', '-d', '-s', 'demo', '-x', str(COLS),
+                 '-y', str(ROWS), str(binary), '--demo')
             time.sleep(0.4)
-            previous_columns = COLS
-            for i, (title, key, keys, columns, delay) in enumerate(steps, 1):
-                for pressed in keys:
-                    tmux("send-keys", "-t", "demo", pressed)
-                    # Give standalone Escape time to decode before the next
-                    # key, which could otherwise be interpreted as Alt+key.
-                    time.sleep(0.15 if pressed == "Escape" else 0.06)
-                if columns != previous_columns:
-                    tmux("resize-window", "-t", "demo", "-x", str(columns), "-y", str(ROWS))
-                time.sleep(0.4)  # Includes the 200 ms preview debounce.
-                capture = tmux("capture-pane", "-p", "-e", "-t", "demo")
-                plain = SGR.sub("", capture)
-                assert "Codex Fleet" in plain, "Demo exited unexpectedly"
-                if columns >= 110 and "?" not in keys:
-                    assert "Task details" in plain, "Wide-screen preview is missing"
-                if i == 6:
-                    assert "/api" in plain and "All 1 " in plain, "Search did not filter the list"
-                if i >= 7:
-                    assert "/api" not in plain, "Search was not cleared before grouping"
-                if i == 10:
-                    assert "Task shortcuts" in plain, "Shortcut guide did not open"
-                if columns < 110:
-                    assert "Task details" not in plain, "Compact view retained the side panel"
-                path = frames / f"{i:02d}"
-                path.with_suffix(".ansi").write_text(capture)
-                path.with_suffix(".svg").write_text(frame_svg(capture, columns, title, key, i, len(steps)))
-                subprocess.run(["magick", "-background", BACKGROUND, str(path.with_suffix(".svg")),
-                                "-alpha", "remove", str(path.with_suffix(".png"))], check=True)
-                manifest.append({"frame": i, "title": title, "keys": keys, "columns": columns, "delay_cs": delay})
-                previous_columns = columns
-                print(f"{i:02d}/{len(steps)} {title}", flush=True)
+            print(f'Recording {DURATION}s at {FPS} fps with live keystrokes...', flush=True)
+            start = time.monotonic()
+            pending = iter(EVENTS)
+            event = next(pending, None)
+            for index in range(FPS * DURATION):
+                time.sleep(max(0, start + index / FPS - time.monotonic()))
+                elapsed = time.monotonic() - start
+                while event and event[0] <= elapsed:
+                    tmux('send-keys', '-t', 'demo', event[1])
+                    sent.append((time.monotonic() - start, *event[1:]))
+                    event = next(pending, None)
+                capture = tmux('capture-pane', '-p', '-e', '-t', 'demo')
+                recording.append({'time': time.monotonic() - start, 'capture': capture})
         finally:
-            tmux("kill-server", check=False)
-        (frames / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
-        command = ["magick"]
-        for frame in manifest:
-            command += ["-delay", str(frame["delay_cs"]), str(frames / f'{frame["frame"]:02d}.png')]
-        command += ["-loop", "0", "-layers", "Optimize", str(args.output)]
-        subprocess.run(command, check=True)
-    print(f"Saved {args.output} ({args.output.stat().st_size:,} bytes)")
+            tmux('kill-server', check=False)
+        validate_recording(recording)
+        assert len(sent) == len(EVENTS), 'A scheduled key was not sent'
+        print(f'Captured {len(recording)} frames; typing and UI transitions verified.', flush=True)
+        (frames / 'recording.json').write_text(json.dumps({'fps': FPS, 'events': sent, 'frames': recording}, indent=2))
+
+        # Rendering happens after recording so it cannot stall input or omit
+        # transient states. Reuse identical rasters during reading pauses.
+        unique = {}
+        for index, frame in enumerate(recording):
+            svg = frame_svg(frame['capture'], sent, frame['time'])
+            path = frames / f'frame-{index:04d}.png'
+            path.unlink(missing_ok=True)
+            path.with_suffix('.svg').write_text(svg)
+            original = unique.setdefault(svg, path)
+            frame['path'], frame['original'] = path, original
+
+        def rasterize(path):
+            subprocess.run(['magick', '-background', BACKGROUND, str(path.with_suffix('.svg')),
+                            '-alpha', 'remove', str(path)], check=True)
+
+        print(f'Rendering {len(unique)} distinct frames...', flush=True)
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            list(pool.map(rasterize, unique.values()))
+        for frame in recording:
+            if frame['path'] != frame['original']:
+                os.link(frame['original'], frame['path'])
+        # A shared palette and no dithering keep static text from shimmering.
+        source = str(frames / 'frame-%04d.png')
+        palette = str(frames / 'palette.png')
+        run = ['ffmpeg', '-hide_banner', '-loglevel', 'error', '-y', '-framerate', str(FPS), '-i', source]
+        subprocess.run(run + ['-vf', 'palettegen=stats_mode=diff:max_colors=128',
+                              '-frames:v', '1', '-update', '1', palette], check=True)
+        result = frames / 'result.gif'
+        subprocess.run(run + ['-i', palette, '-lavfi', 'paletteuse=dither=none:diff_mode=rectangle',
+                              '-loop', '0', str(result)], check=True)
+        args.output.write_bytes(result.read_bytes())
+    print(f'Saved {args.output} ({args.output.stat().st_size:,} bytes)')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

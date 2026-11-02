@@ -18,9 +18,9 @@
 </div>
 
 <p align="center">
-  <img src="docs/assets/demo.gif" width="100%" alt="Animated tour of navigation, status filters, search, grouping, keyboard shortcuts and responsive layout">
+  <img src="docs/assets/demo.gif" width="100%" alt="Continuous keyboard demo: browse sessions, type a search, read a conversation and open the shortcut guide">
 </p>
-<p align="center"><sub>An 18-second tour of the running TUI with synthetic sessions. Keys are shown above the terminal.</sub></p>
+<p align="center"><sub>A continuous 24-second recording with synthetic sessions. Live key presses appear below the terminal.</sub></p>
 
 Keep track of work on your laptop, desktop and embedded devices without cycling
 through terminals. Inspired by `codex agents`, Fleet brings your existing
