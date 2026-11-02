@@ -39,7 +39,7 @@ impl Default for Config {
             timeout_seconds: default_timeout(),
             hosts: vec![Host {
                 id: "local".into(),
-                name: "Laptop".into(),
+                name: "Local".into(),
                 ssh: None,
                 socket: None,
                 codex: default_codex(),

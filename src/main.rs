@@ -482,26 +482,26 @@ fn demo() -> Vec<Snapshot> {
     [
         (
             "local",
-            "Laptop",
+            "Local",
             vec![
                 ("Update documentation", "idle"),
                 ("Review API client", "active"),
             ],
         ),
         (
-            "desktop",
-            "Desktop",
+            "dev",
+            "Dev server",
             vec![
                 ("Run integration tests", "active"),
                 ("Review service supervisor", "notLoaded"),
             ],
         ),
         (
-            "jetson",
-            "Jetson",
+            "build",
+            "Build server",
             vec![
-                ("Validate sensor stream", "active"),
-                ("Debug device connection", "notLoaded"),
+                ("Investigate cache miss", "active"),
+                ("Review dependency update", "notLoaded"),
             ],
         ),
     ]
@@ -533,7 +533,7 @@ fn demo() -> Vec<Snapshot> {
                 updated_at: now() - i as i64 * 70,
                 status: ThreadStatus {
                     kind: kind.into(),
-                    active_flags: if id == "desktop" && i == 0 {
+                    active_flags: if id == "dev" && i == 0 {
                         vec!["waitingOnApproval".into()]
                     } else {
                         vec![]

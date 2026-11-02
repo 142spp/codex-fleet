@@ -2,7 +2,7 @@
 
 [← Back to README](../README.md) · [Usage](usage.md)
 
-## Add your devices
+## Add your hosts
 
 Fleet uses your existing OpenSSH configuration and each device's existing Codex
 shared app-server. Authenticate Codex on the devices themselves; Fleet needs no
@@ -23,18 +23,24 @@ timeout_seconds = 15
 
 [[hosts]]
 id = "local"
-name = "Laptop"
+name = "Local"
 
 [[hosts]]
-id = "desktop"
-name = "Desktop"
-ssh = "desktop"
+id = "dev"
+name = "Dev server"
+ssh = "dev"
 
 [[hosts]]
-id = "jetson"
-name = "Jetson"
-ssh = "jetson"
+id = "build"
+name = "Build server"
+ssh = "build"
 ```
+
+These are example roles, not device categories. `name` is the label displayed
+in the TUI; `ssh` is an existing OpenSSH destination. Use your own names for
+development servers, VMs, workstations or other SSH-accessible Linux hosts.
+Add or remove host entries to match your setup. Fleet does not assume three
+hosts, and it does not infer hardware type from a label.
 
 ```sh
 codex-fleet --config ~/.config/codex-fleet/fleet.toml
@@ -42,6 +48,8 @@ codex-fleet --config ~/.config/codex-fleet/fleet.toml
 
 The configuration path must be passed explicitly. Without `--config`, Fleet
 connects only to the local shared server. Host sections appear in file order.
+The built-in local host is labeled `Local`; an explicit configuration can give
+it any display name.
 
 ## Reference
 
@@ -93,9 +101,9 @@ executable path on the affected host:
 
 ```toml
 [[hosts]]
-id = "desktop"
-name = "Desktop"
-ssh = "desktop"
+id = "dev"
+name = "Dev server"
+ssh = "dev"
 codex = "/home/you/.local/bin/codex"
 ```
 

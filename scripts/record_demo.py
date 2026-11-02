@@ -128,7 +128,7 @@ def frame_svg(capture, events, elapsed):
         output.append(f'<g opacity="{opacity:.2f}"><rect x="{x}" y="{y}" width="{width}" height="34" rx="6" fill="{fill}" stroke="{stroke}"/>')
         output.append(f'<text x="{x + width / 2}" y="{y + 22}" text-anchor="middle" fill="#e6e9f0" font-size="15">{escape(label)}</text></g>')
         x += width + 8
-    action = recent[-1][3] if recent else 'Laptop · Desktop · Jetson'
+    action = recent[-1][3] if recent else 'Local · Dev server · Build server'
     output.append(f'<text x="{WIDTH - 20}" y="{footer + 36}" text-anchor="end" fill="#b7c5d9" font-size="14">{escape(action)}</text>')
     output.append('</g></svg>')
     return "\n".join(output)
@@ -144,12 +144,11 @@ EVENTS = [
     (3.80, 'Tab', 'Tab', 'Filter: Needs you'),
     (5.30, 'BTab', 'Shift+Tab', 'Filter: All'),
     (6.25, '/', '/', 'Search sessions'),
-    (6.85, 's', 's', 'Search: s'),
-    (7.02, 'e', 'e', 'Search: se'),
-    (7.14, 'n', 'n', 'Search: sen'),
-    (7.40, 's', 's', 'Search: sens'),
-    (7.54, 'o', 'o', 'Search: senso'),
-    (7.70, 'r', 'r', 'Search: sensor'),
+    (6.85, 'c', 'c', 'Search: c'),
+    (7.02, 'a', 'a', 'Search: ca'),
+    (7.14, 'c', 'c', 'Search: cac'),
+    (7.40, 'h', 'h', 'Search: cach'),
+    (7.54, 'e', 'e', 'Search: cache'),
     (8.65, 'Enter', 'Enter', 'Keep search results'),
     (9.15, 'd', 'd', 'Open conversation'),
     (10.80, 'Escape', 'Esc', 'Close conversation'),
@@ -176,10 +175,10 @@ def validate_recording(recording):
 
     assert 'All 6 ' in pane(0.5)
     assert 'Needs you 1' in pane(4.5) and 'Run integration tests' in pane(4.5)
-    assert '/se' in pane(7.12), 'Intermediate typing was not captured'
-    assert '/sensor' in pane(8.2) and 'All 1 ' in pane(8.2)
+    assert '/ca' in pane(7.12), 'Intermediate typing was not captured'
+    assert '/cache' in pane(8.2) and 'All 1 ' in pane(8.2)
     assert 'Recent conversation' in pane(9.8)
-    assert '/sensor' not in pane(11.8)
+    assert '/cache' not in pane(11.8)
     assert 'Group: Project' in pane(12.8)
     assert 'Task shortcuts' in pane(16.8)
     assert 'Task shortcuts' not in pane(18.4)
@@ -189,7 +188,7 @@ def validate_recording(recording):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--output', type=Path, default=ROOT / 'docs/assets/demo-live.gif')
+    parser.add_argument('--output', type=Path, default=ROOT / 'docs/assets/walkthrough.gif')
     parser.add_argument('--frames-dir', type=Path, help='Keep captures, frames and timing for review')
     args = parser.parse_args()
     binary = ROOT / 'target/debug/codex-fleet'

@@ -4,6 +4,13 @@
 
 ## Boundary
 
+The native [`codex agents` command](https://learn.chatgpt.com/docs/developer-commands#codex-agents)
+provides a command center for a connected shared server, including a remote
+server. Fleet extends that interaction model across independent servers in
+one terminal. Search, grouping and status filters operate on the merged view;
+reads and actions still go to the server that owns each thread. This is the
+reason for a multi-server client, rather than a different session runtime.
+
 Fleet owns the terminal UI and its connections. Each existing Codex app-server
 continues owning its sessions, turns, execution processes and workspaces. Fleet
 does not start, restart, upgrade or stop those servers.
