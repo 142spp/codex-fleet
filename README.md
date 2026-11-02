@@ -18,7 +18,7 @@
 </div>
 
 <p align="center">
-  <img src="docs/assets/demo.gif" width="100%" alt="Continuous keyboard demo: browse sessions, type a search, read a conversation and open the shortcut guide">
+  <img src="docs/assets/demo-live.gif" width="100%" alt="Continuous keyboard demo: browse sessions, type a search, read a conversation and open the shortcut guide">
 </p>
 <p align="center"><sub>A continuous 24-second recording with synthetic sessions. Live key presses appear below the terminal.</sub></p>
 

@@ -189,7 +189,7 @@ def validate_recording(recording):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--output', type=Path, default=ROOT / 'docs/assets/demo.gif')
+    parser.add_argument('--output', type=Path, default=ROOT / 'docs/assets/demo-live.gif')
     parser.add_argument('--frames-dir', type=Path, help='Keep captures, frames and timing for review')
     args = parser.parse_args()
     binary = ROOT / 'target/debug/codex-fleet'
