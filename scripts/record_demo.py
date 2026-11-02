@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 COLS, ROWS = 140, 34
 CELL_W, CELL_H = 9, 20
 PAD, TOP = 20, 20
-WIDTH, HEIGHT = COLS * CELL_W + PAD * 2, ROWS * CELL_H + TOP + 96
+WIDTH, HEIGHT = COLS * CELL_W + PAD * 2, ROWS * CELL_H + TOP + PAD
 FPS, DURATION = 20, 24
 BACKGROUND, FOREGROUND = "#19191c", "#cecbd8"
 # Match the reference palette in src/snapshot.rs.
@@ -43,8 +43,8 @@ def indexed_color(index):
     return "#{0:02x}{0:02x}{0:02x}".format(8 + 10 * (index - 232))
 
 
-def frame_svg(capture, events, elapsed):
-    """Preserve captured terminal cells; show timed key presses below the TUI."""
+def frame_svg(capture):
+    """Preserve captured terminal cells without adding presentation overlays."""
     output = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{WIDTH}" height="{HEIGHT}">',
               f'<rect width="100%" height="100%" rx="12" fill="{BACKGROUND}"/>',
               '<g font-family="DejaVu Sans Mono, monospace">',
@@ -112,24 +112,6 @@ def frame_svg(capture, events, elapsed):
                     output.append(f'<text x="{x}" y="{y + 15}" fill="{fg}" font-weight="{weight}" font-style="{italic}" text-decoration="{underline}" opacity="{opacity}">{escape(char)}</text>')
                 column += cells
     output.append('</g>')
-    footer = TOP + ROWS * CELL_H + 12
-    output.append(f'<path d="M20 {footer}H{WIDTH - 20}" stroke="#35353d"/>')
-    output.append(f'<text x="20" y="{footer + 39}" fill="#9999a5" font-size="13">KEYS</text>')
-    recent = [event for event in events if 0 <= elapsed - event[0] < 2.4][-7:]
-    x = 82
-    for at, key, label, action in recent:
-        age = elapsed - at
-        opacity = min(1.0, (2.4 - age) / 0.55)
-        pressed = age < 0.2
-        width = max(38, len(label) * 10 + 20)
-        fill = '#294557' if pressed else '#22252d'
-        stroke = '#8ab4f8' if pressed else '#454957'
-        y = footer + 14 + (2 if pressed else 0)
-        output.append(f'<g opacity="{opacity:.2f}"><rect x="{x}" y="{y}" width="{width}" height="34" rx="6" fill="{fill}" stroke="{stroke}"/>')
-        output.append(f'<text x="{x + width / 2}" y="{y + 22}" text-anchor="middle" fill="#e6e9f0" font-size="15">{escape(label)}</text></g>')
-        x += width + 8
-    action = recent[-1][3] if recent else 'Local · Dev server · Build server'
-    output.append(f'<text x="{WIDTH - 20}" y="{footer + 36}" text-anchor="end" fill="#b7c5d9" font-size="14">{escape(action)}</text>')
     output.append('</g></svg>')
     return "\n".join(output)
 
@@ -188,7 +170,7 @@ def validate_recording(recording):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--output', type=Path, default=ROOT / 'docs/assets/walkthrough.gif')
+    parser.add_argument('--output', type=Path, default=ROOT / 'docs/assets/session-tour.gif')
     parser.add_argument('--frames-dir', type=Path, help='Keep captures, frames and timing for review')
     args = parser.parse_args()
     binary = ROOT / 'target/debug/codex-fleet'
@@ -241,7 +223,7 @@ def main():
         # transient states. Reuse identical rasters during reading pauses.
         unique = {}
         for index, frame in enumerate(recording):
-            svg = frame_svg(frame['capture'], sent, frame['time'])
+            svg = frame_svg(frame['capture'])
             path = frames / f'frame-{index:04d}.png'
             path.unlink(missing_ok=True)
             path.with_suffix('.svg').write_text(svg)

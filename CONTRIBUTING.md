@@ -72,8 +72,8 @@ The recorder operates the real `--demo` TUI in its own isolated tmux server and
 captures continuously at 20 fps, including each typed character and intermediate
 preview state. Rendering happens after capture so encoding cannot delay input.
 ANSI colors and cell positions are preserved; a shared GIF palette prevents
-static text from shimmering. Key presses and their meaning appear below the
-terminal, timed to the recorded input.
+static text from shimmering. The GIF shows only the terminal screen, with no
+added captions or key overlays.
 
 It uses only Python's standard library and does not connect to real devices.
 Use `--frames-dir artifacts/demo-frames` to retain the capture, input timing,

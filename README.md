@@ -18,9 +18,9 @@
 </div>
 
 <p align="center">
-  <img src="docs/assets/walkthrough.gif" width="100%" alt="Continuous keyboard demo across Local, Dev server and Build server: browse sessions, search, read a conversation and open the shortcut guide">
+  <img src="docs/assets/session-tour.gif" width="100%" alt="Continuous keyboard demo across Local, Dev server and Build server: browse sessions, search, read a conversation and open the shortcut guide">
 </p>
-<p align="center"><sub>A continuous 24-second recording with synthetic sessions. Live key presses appear below the terminal.</sub></p>
+<p align="center"><sub>A continuous 24-second recording with example sessions.</sub></p>
 
 Codex Fleet brings sessions from multiple local and SSH-connected hosts into
 one terminal. See what needs attention, find a conversation across environments,
