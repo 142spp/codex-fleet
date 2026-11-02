@@ -1,8 +1,3 @@
-<p align="center">
-  <img src="docs/assets/demo.gif" width="100%" alt="Animated tour of navigation, status filters, search, grouping, keyboard shortcuts and responsive layout">
-</p>
-<p align="center"><sub>An 18-second tour of the running TUI with synthetic sessions. Keys are shown above the terminal.</sub></p>
-
 <div align="center">
   <img src="docs/assets/logo.svg" width="96" height="96" alt="Codex Fleet logo">
   <h1>Codex Fleet</h1>
@@ -21,6 +16,11 @@
     <a href="CONTRIBUTING.md">Contributing</a>
   </p>
 </div>
+
+<p align="center">
+  <img src="docs/assets/demo.gif" width="100%" alt="Animated tour of navigation, status filters, search, grouping, keyboard shortcuts and responsive layout">
+</p>
+<p align="center"><sub>An 18-second tour of the running TUI with synthetic sessions. Keys are shown above the terminal.</sub></p>
 
 Keep track of work on your laptop, desktop and embedded devices without cycling
 through terminals. Inspired by `codex agents`, Fleet brings your existing
